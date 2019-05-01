@@ -271,54 +271,57 @@ import (
 	"net/http"
 	"github.com/fenfenbingo/bingosession/session"
 	"strconv"
+	"github.com/json-iterator/go"
 )
 
 //request http://localhost/foo to test
 
-var cookieObjProvider session.ISessionProvider
+var cookieRedisProvider session.ISessionProvider
 
 func main() {
-	fmt.Println("TestSessionCookieObj start...")
-	cookieObjProvider = session.NewProvider("cookie", &session.ProviderConf{
-		SessCookieName:    "SESSION_COOKIE_OBJ",
-		CookieMaxAge:      86400 * 30,
-		Path:              "/",
-		Domain:            "localhost",
-		Secure:            false,
-		HttpOnly:          true,
-		MaxLifeTime:       20,
+	fmt.Println("TestSessionCookieRedis start...")
+	cookieRedisProvider = session.NewProvider("cookie_redis", &session.ProviderConf{
+		SessCookieName: "SESSION_COOKIE_REDIS",
+		CookieMaxAge:   86400 * 30,
+		Path:           "/",
+		Domain:         "localhost",
+		Secure:         false,
+		HttpOnly:       true,
+		MaxLifeTime:    20,
 		//specials for cookie session
-		SignKey:"qazwsx654321",
+		SignKey:        "qazwsx654321",
+		CacheKeyPrefix:"sessions-",
+		StoreUrl:    "127.0.0.1:6379",
+		Password:    "",
+		MaxIdle:     5,
+		IdleTimeout: 1800,
+		DBIndex:     0,
 	})
 	mux := http.NewServeMux()
-	mux.Handle("/foo", &MyHandlerCookieObj{})
+	mux.Handle("/foo", &MyHandlerCookieRedis{})
 	http.ListenAndServe(":80", mux)
 }
 
-func (h *MyHandlerCookieObj) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	sess, ecode := cookieObjProvider.SessionStart(r, w)
-	fmt.Println("request index:"+strconv.Itoa(h.index))
+func (h *MyHandlerCookieRedis) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	sess, ecode := cookieRedisProvider.SessionStart(r, w)
+	fmt.Println("request index:" + strconv.Itoa(h.index))
 	h.index++
 	if ecode != session.NoErr {
 		fmt.Println("session start fail,err_code:", ecode)
-		user:=&TestUserInfo{Uid:666,Username:"fenfen"}
-		sess.SaveObject(user)
+		sess.Set("uid", 555)
+		sess.Set("username", "fenfen")
+		sess.Save()
 	} else {
-		user:=&TestUserInfo{}
-		sess.LoadObject(user)
-		fmt.Println("get uid result:", user.Uid)
-		fmt.Println("get username result:", user.Username)
+		uid := jsoniter.Wrap(sess.Get("uid")).ToInt()
+		usename := jsoniter.Wrap(sess.Get("username")).ToString()
+		fmt.Println("get uid result:", uid)
+		fmt.Println("get username result:", usename)
 	}
 
 }
 
-type MyHandlerCookieObj struct {
+type MyHandlerCookieRedis struct {
 	index int
-}
-
-type TestUserInfo struct {
-	Uid int64 `json:"uid"`
-	Username string `json:"username"`
 }
 ```
 
