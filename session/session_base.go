@@ -36,7 +36,7 @@ type sessionBase struct {
 	Values map[string]interface{}
 
 	ID string
-	//不建议可能存在异步操作session的情况，如有可能，请自行实现并发安全
+	//未实现并发安全，如有需要，请自行实现并发安全(建议避免并发操作，因为函数互相访问map，加这个要非常小心注意死锁)
 	//Lock sync.RWMutex
 
 	Config *ProviderConf
@@ -51,8 +51,8 @@ func (s *sessionBase) SetSessionId(sid string) {
 }
 
 func (s *sessionBase) Get(key string) interface{} {
-	//self.Lock.RLock()
-	//defer self.Lock.RUnlock()
+	//s.Lock.RLock()
+	//defer s.Lock.RUnlock()
 	if value, ok := s.Values[key]; ok {
 		return value
 	}
@@ -60,14 +60,14 @@ func (s *sessionBase) Get(key string) interface{} {
 }
 
 func (s *sessionBase) Set(key string, value interface{}) {
-	//self.Lock.Lock()
-	//defer self.Lock.Unlock()
+	//sLock.Lock()
+	//defer s.Lock.Unlock()
 	s.Values[key] = value
 }
 
 func (s *sessionBase) Delete(key string) {
-	//self.Lock.Lock()
-	//defer self.Lock.Unlock()
+	//s.Lock.Lock()
+	//defer s.Lock.Unlock()
 	delete(s.Values, key)
 }
 

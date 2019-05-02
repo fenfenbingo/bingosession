@@ -107,6 +107,8 @@ type sessionCookie struct {
 }
 
 func (s *sessionCookie) Save() (err error) {
+	//s.Lock.Lock()
+	//defer s.Lock.Unlock()
 	if len(s.Values) == 0 {
 		s.Destroy()
 		return nil

@@ -3,6 +3,7 @@
 
 Golang plugin for session management (currently cookie, redis, file).You can manage your session easyly by "session.ISessionProvider" and "session.ISession" interface.
 
+Notice:Currently, concurrency security is not implemented,don't operate the same session in  multi-coroutines
 ## Usage
 
 ### Start using it
