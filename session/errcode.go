@@ -15,8 +15,8 @@ var (
 	ErrLoadCache = addErr(102, "ErrLoadCache(Expire)")//读取缓存出现异常（已过期）
 	ErrExpire = addErr(103, "ErrExpire")//已过期
 	ErrInValidSessId = addErr(800, "ErrInValidSessId")//session id不合法
-	ErrCacheFormat = addErr(801, "ErrInValidSessId")//session签名错误
-	ErrInvalidSign = addErr(802, "ErrInvalidSign")//缓存数据格式异常
+	ErrCacheFormat = addErr(801, "ErrInValidSessId")//缓存数据格式异常
+	ErrInvalidSign = addErr(802, "ErrInvalidSign")//session签名错误
 )
 
 func addErr(code int, msg string) *ErrInfo {
