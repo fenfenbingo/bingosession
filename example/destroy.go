@@ -43,6 +43,7 @@ func (h *MyHandlerFile2) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		sess.Save()
 		sid := sess.GetSessionId()
 		go func() {
+			//虽然设置是一天后过期，但是因为主动销毁，5s后就过期了。适用于修改密码时。
 			//Although the session expires in 86400 seconds, due to active destruction, the session will expire in 5 seconds.
 			//Use "ISessionProvider.SessionDestroy" function,you can expire old sessions when you modify your password
 			time.Sleep(time.Second * 5)
