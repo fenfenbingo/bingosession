@@ -13,6 +13,8 @@ import (
 
 var uuid *UUID
 
+var signKey = []byte("bingo")
+
 func init() {
 	addr, err := GetMacAddr()
 	if err != nil {
@@ -53,13 +55,14 @@ func (self *UUID) generateUUID() string {
 	b1 := Int64ToBytes(ts)
 	b2 := IntToBytes(id)
 	b3 := IntToBytes(self.pid)
-	b4 := Int32ToBytes(rand.Int31())
+	b4 := Int64ToBytes(rand.Int63())
 	var buffer bytes.Buffer
 	buffer.Write(b1)
 	buffer.Write(self.macAddr)
 	buffer.Write(b2)
 	buffer.Write(b3)
 	buffer.Write(b4)
+	buffer.Write(signKey)
 	return MD5(buffer.Bytes())
 }
 

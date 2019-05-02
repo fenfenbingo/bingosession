@@ -51,9 +51,11 @@ type ISession interface {
 
 	Destroy() error
 
+	//如果本来SessionId为空，调用Save()后会生成一个32位全局唯一ID，可以通过GetSessionId()方法获取。也可以使用SetSessionId()事先设置SessionId。
+	//生成SessionId请使用GenerateUUID()方法，不支持自定义格式。
 	Save() error
 
-	//extends
+	//extends(扩展方法)
 	LoadObject(ref interface{})
 	SaveObject(v interface{}) error
 }
@@ -94,7 +96,7 @@ func NewProvider(cacheType string, c *ProviderConf) ISessionProvider {
 	return res
 }
 
-//生成32位全局ID
+//生成32位全局唯一ID
 func GenerateUUID() string {
 	return util.GenerateUUID()
 }
